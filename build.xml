@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="solrmongoimporter" default="compile">
+
+
+    <property file="build.properties"/>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="init" depends="clean">
+        <mkdir dir="${build.dir}"/>
+        <ivy:retrieve />
+    </target>
+
+    <path id="build.classpath">
+        <fileset dir="${basedir}/">
+            <include name="${lib.dir}/*.jar"/>
+        </fileset>
+    </path>
+
+    <pathconvert property="mf.classpath" pathsep=" ">
+        <path refid="build.classpath"/>
+        <mapper>
+            <chainedmapper>
+                <flattenmapper/>
+                <globmapper from="*.jar" to="lib/*.jar"/>
+            </chainedmapper>
+        </mapper>
+    </pathconvert>
+
+
+    <path id="jars">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <target name="compile" depends="init">
+
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="jars" debug="on"/>
+    </target>
+
+
+    <target name="jar" depends="compile">
+        <jar basedir="${build.dir}" destfile="${store.dir}/solr-mongo-importer.jar" />
+    </target>
+
+</project>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<ivy-module version="2.0">
+    <info organisation="com.example" module="common-libs"/>
+    <configurations>
+        <conf name="runtime" transitive="true" visibility="public" />
+        <conf name="master" transitive="true" visibility="public" />
+        <conf name="compile" transitive="true" visibility="public" />
+        <conf name="default" transitive="true" visibility="public" extends="master" />
+    </configurations>
+    <dependencies>
+        <dependency org="org.mongodb" name="mongo-java-driver" rev="2.8.0"
+                    conf="compile->compile(*),master(*);runtime->runtime(*);master->master(*)"/>
+        <dependency org="org.apache.solr" name="solr-dataimporthandler" rev="3.6.0"
+                    conf="compile->compile(*),master(*);runtime->runtime(*);master->master(*)"/>
+        <dependency org="junit" name="junit" rev="4.3"
+                    conf="compile->compile(*),master(*);runtime->runtime(*);master->master(*)"/>
+    </dependencies>
+</ivy-module>
