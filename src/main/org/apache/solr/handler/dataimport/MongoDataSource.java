@@ -25,39 +25,40 @@ import static org.apache.solr.handler.dataimport.DataImportHandlerException.wrap
 
 public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
 
-    private String databaseName;
-    private String collectionName;
-
     private static final Logger LOG = LoggerFactory.getLogger(TemplateTransformer.class);
 
     private DBCollection mongoCollection;
+    private DB           mongoDb;
 
     private DBCursor mongoCursor;
     
     @Override
     public void init(Context context, Properties initProps) {
-        this.databaseName   = initProps.getProperty( "database" );
-        this.collectionName = initProps.getProperty( "collection" );
+        String databaseName   = initProps.getProperty( DATABASE   );
+        String host           = initProps.getProperty( HOST, "localhost" );
+        String port           = initProps.getProperty( PORT, "27017"     );
+        String username       = initProps.getProperty( USERNAME  );
+        String password       = initProps.getProperty( PASSWORD  );
 
-        if( this.databaseName == null ) {
-            throw new DataImportHandlerException(SEVERE,
-                    "Database must be supplied");
-
-        }
-
-        if( this.collectionName == null ) {
-            throw new DataImportHandlerException(SEVERE,
-                    "Collection must be supplied");
-
+        if( databaseName == null ) {
+            throw new DataImportHandlerException( SEVERE
+                                                , "Database must be supplied");
         }
 
         try {
-            Mongo mongo          = new Mongo();
-            DB    mongoDb        = mongo.getDB( this.databaseName );
-            this.mongoCollection = mongoDb.getCollection( this.collectionName );
-        } catch (UnknownHostException e) {
-            throw new DataImportHandlerException(SEVERE,
-                        "Unable to connect to Mongo");
+            Mongo mongo  = new Mongo( host, Integer.parseInt( port ) );
+            this.mongoDb = mongo.getDB( databaseName );
+
+            if( username != null ){
+                if( this.mongoDb.authenticate( username, password.toCharArray() ) == false ){
+                    throw new DataImportHandlerException( SEVERE
+                                                        , "Mongo Authentication Failed");
+                }
+            }
+
+        } catch ( UnknownHostException e ) {
+            throw new DataImportHandlerException( SEVERE
+                                                , "Unable to connect to Mongo");
         }
     }
 
@@ -74,6 +75,10 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
 
         ResultSetIterator resultSet = new ResultSetIterator( mongoCursor );
         return resultSet.getIterator();
+    }
+
+    public void setCollection( String collectionName ){
+        this.mongoCollection = this.mongoDb.getCollection( collectionName );
     }
 
     private class ResultSetIterator {
@@ -160,4 +165,12 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
     public void close() {
         this.mongoCursor.close();
     }
+
+
+    public static final String DATABASE   = "database";
+    public static final String HOST       = "host";
+    public static final String PORT       = "port";
+    public static final String USERNAME   = "username";
+    public static final String PASSWORD   = "password";
+
 }

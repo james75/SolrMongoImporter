@@ -18,13 +18,19 @@ import static org.apache.solr.handler.dataimport.DataImportHandlerException.SEVE
 public class MongoEntityProcessor extends EntityProcessorBase {
     private static final Logger LOG = LoggerFactory.getLogger(EntityProcessorBase.class);
 
-    protected DataSource<Iterator<Map<String, Object>>> dataSource;
+    protected MongoDataSource dataSource;
 
     @Override
     public void init(Context context) {
         super.init(context);
-        dataSource  = (MongoDataSource) context.getDataSource();
+        String collectionName = context.getEntityAttribute( COLLECTION );
+        if( collectionName == null ) {
+            throw new DataImportHandlerException(SEVERE,
+                    "Collection must be supplied");
 
+        }
+        this.dataSource  = (MongoDataSource) context.getDataSource();
+        dataSource.setCollection( collectionName );
     }
 
     protected void initQuery(String q) {
@@ -49,6 +55,6 @@ public class MongoEntityProcessor extends EntityProcessorBase {
         return getNext();
     }
 
-    public static final String QUERY = "query";
-
+    public static final String QUERY      = "query";
+    public static final String COLLECTION = "collection";
 }
