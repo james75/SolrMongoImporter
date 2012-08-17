@@ -29,6 +29,7 @@ Welcome to the Solr Mongo Importer project. This project provides MongoDb suppor
    mongodb/mongo-java-driver
 3. Place both of these jar's in your Solr libaries folder ( I put mine in 'dist' folder with the other jar's)
 4. Add lib directives to your solrconfig.xml
+
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
     <config>
