@@ -9,24 +9,24 @@ Welcome to the Solr Mongo Importer project. This project provides MongoDb suppor
 ## Classes
 
 * MongoDataSource - Provides a MongoDb datasource
-    * database (required) - The name of the data base you want to connect to
-    * host (optional - default: localhost)
-    * port (optional - default: 27017)
-    * username (optional)
-    * password (optional)
+    * database (**required**) - The name of the data base you want to connect to
+    * host     (*optional* - default: localhost)
+    * port     (*optional* - default: 27017)
+    * username (*optional*)
+    * password (*optional*)
 * MongoEntityProcessor - Use with the MongoDataSource to query a MongoDb collection
-    * collection (required)
-    * query (required)
+    * collection (**required**)
+    * query (**required**)
 * MongoMapperTransformer - Map MongoDb fields to your Solr schema
-    * mongoField (required)
+    * mongoField (**required**)
 
 ## Installation
 1. Firstly you will need a copy of the Solr Mongo Importer jar.
-    1. You can either download a copy here
-     james75/SolrMongoImporter
-    2. Build your own using the ant build script.
-2. You will also need the Mongo Java driver, you can get this from:
-   mongodb/mongo-java-driver
+    ### Getting Solr Mongo Importer
+    1. [Download the JAR from github](https://github.com/james75/SolrMongoImporter/downloads)
+    2. Build your own using the ant build script you will need the JDK installed as well as Ant and Ivy
+2. You will also need the [Mongo Java driver JAR]   (https://github.com/mongodb/mongo-java-driver/downloads)
+
 3. Place both of these jar's in your Solr libaries folder ( I put mine in 'dist' folder with the other jar's)
 4. Add lib directives to your solrconfig.xml
 
