@@ -23,18 +23,20 @@ Welcome to the Solr Mongo Importer project. This project provides MongoDb suppor
 ## Installation
 1. Firstly you will need a copy of the Solr Mongo Importer jar.
     1. You can either download a copy here
-     james75/[SolrMongoImporter](https://github.com/james75/SolrMongoImporter/downloads)
+     james75/SolrMongoImporter
     2. Build your own using the ant build script.
 2. You will also need the Mongo Java driver, you can get this from:
-   mongodb/[mongo-java-driver](https://github.com/mongodb/mongo-java-driver/downloads)
+   mongodb/mongo-java-driver
 3. Place both of these jar's in your Solr libaries folder ( I put mine in 'dist' folder with the other jar's)
 4. Add lib directives to your solrconfig.xml
-   `<lib path="../../dist/solr-mongo-importer.jar" />
-    <lib path="../../dist/mongo.jar" />`
+    ```xml
+    <lib path="../../dist/solr-mongo-importer.jar" />
+    <lib path="../../dist/mongo.jar" />
+    ```
 
 ##Usage
 Here is a sample data-config.xml showing the use of all components
-`
+```xml
 <?xml version="1.0" encoding="UTF-8" ?>
 <dataConfig>
      <dataSource name="MyMongo" type="MongoDataSource" database="Inventory" />
@@ -50,4 +52,4 @@ Here is a sample data-config.xml showing the use of all components
          </entity>
      </document>
  </dataConfig>
-`
+```
