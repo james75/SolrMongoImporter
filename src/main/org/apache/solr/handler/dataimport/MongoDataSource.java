@@ -77,8 +77,9 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
         return resultSet.getIterator();
     }
 
-    public void setCollection( String collectionName ){
-        this.mongoCollection = this.mongoDb.getCollection( collectionName );
+    public Iterator<Map<String, Object>> getData(String query, String collection ) {
+        this.mongoCollection = this.mongoDb.getCollection( collection );
+        return getData( query );
     }
 
     private class ResultSetIterator {
@@ -157,13 +158,15 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
         }
     }
 
-    private DBCursor  getMongoCursor(){
+    private DBCursor getMongoCursor(){
         return this.mongoCursor;
     }
 
     @Override
     public void close() {
-        this.mongoCursor.close();
+        if( this.mongoCursor != null ){
+            this.mongoCursor.close();
+        }
     }
 
 

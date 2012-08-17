@@ -20,23 +20,24 @@ public class MongoEntityProcessor extends EntityProcessorBase {
 
     protected MongoDataSource dataSource;
 
+    private String collection;
+
     @Override
     public void init(Context context) {
         super.init(context);
-        String collectionName = context.getEntityAttribute( COLLECTION );
-        if( collectionName == null ) {
+        this.collection = context.getEntityAttribute( COLLECTION );
+        if( this.collection == null ) {
             throw new DataImportHandlerException(SEVERE,
                     "Collection must be supplied");
 
         }
         this.dataSource  = (MongoDataSource) context.getDataSource();
-        dataSource.setCollection( collectionName );
     }
 
     protected void initQuery(String q) {
         try {
             DataImporter.QUERY_COUNT.get().incrementAndGet();
-            rowIterator = dataSource.getData( q );
+            rowIterator = dataSource.getData( q, this.collection );
             this.query = q;
         } catch (DataImportHandlerException e) {
             throw e;
