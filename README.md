@@ -31,11 +31,8 @@ Welcome to the Solr Mongo Importer project. This project provides MongoDb suppor
 4. Add lib directives to your solrconfig.xml
 
 ```xml
-<?xml version="1.0" encoding="UTF-8" ?>
-    <config>
-        <lib path="../../dist/solr-mongo-importer.jar" />
-        <lib path="../../dist/mongo.jar" />
-    </config>
+    <lib path="../../dist/solr-mongo-importer.jar" />
+    <lib path="../../dist/mongo.jar" />
 ```
 
 ##Usage
