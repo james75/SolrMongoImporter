@@ -47,6 +47,8 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
 
         try {
             Mongo mongo  = new Mongo( host, Integer.parseInt( port ) );
+            mongo.setReadPreference(ReadPreference.secondaryPreferred());
+
             this.mongoDb = mongo.getDB( databaseName );
 
             if( username != null ){

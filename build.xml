@@ -4,17 +4,17 @@
     <property file="build.properties"/>
 
     <target name="clean">
-        <delete dir="${build.dir}"/>
+        <delete dir="build"/>
     </target>
 
     <target name="init" depends="clean">
-        <mkdir dir="${build.dir}"/>
-        <ivy:retrieve />
+        <mkdir dir="build"/>
+<!--        <ivy:retrieve /> -->
     </target>
 
     <path id="build.classpath">
-        <fileset dir="${basedir}/">
-            <include name="${lib.dir}/*.jar"/>
+        <fileset dir=".">
+            <include name="lib/*.jar"/>
         </fileset>
     </path>
 
@@ -30,18 +30,18 @@
 
 
     <path id="jars">
-        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        <fileset dir="lib" includes="**/*.jar"/>
     </path>
 
     <target name="compile" depends="init">
 
-        <mkdir dir="${build.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="jars" debug="on"/>
+        <mkdir dir="build"/>
+        <javac srcdir="src" destdir="build" classpathref="jars" debug="on"/>
     </target>
 
 
     <target name="jar" depends="compile">
-        <jar basedir="${build.dir}" destfile="${store.dir}/solr-mongo-importer.jar" />
+        <jar basedir="build" destfile="dest/solr-mongo-importer.jar" />
     </target>
 
 </project>
