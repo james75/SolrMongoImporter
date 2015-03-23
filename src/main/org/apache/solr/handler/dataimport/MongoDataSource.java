@@ -29,6 +29,7 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
 
     private DBCollection mongoCollection;
     private DB           mongoDb;
+    private Mongo        mongoConnection;
 
     private DBCursor mongoCursor;
     
@@ -47,6 +48,9 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
 
         try {
             Mongo mongo  = new Mongo( host, Integer.parseInt( port ) );
+            mongo.setReadPreference(ReadPreference.secondaryPreferred());
+
+            this.mongoConnection = mongo;
             this.mongoDb = mongo.getDB( databaseName );
 
             if( username != null ){
@@ -167,6 +171,10 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
         if( this.mongoCursor != null ){
             this.mongoCursor.close();
         }
+
+        if (this.mongoConnection !=null ){
+            this.mongoConnection.close();
+        }
     }
 
 
@@ -177,3 +185,4 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
     public static final String PASSWORD   = "password";
 
 }
+
