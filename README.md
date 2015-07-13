@@ -18,8 +18,8 @@ Welcome to the Solr Mongo Importer project. This project provides MongoDb suppor
 * MongoEntityProcessor - Use with the MongoDataSource to query a MongoDb collection
     * collection (**required**)
     * query (**required**)
-    * deltaquery 
-    * deltaimportquery 
+    * deltaQuery (*optional*)
+    * deltaImportQuery (*optional*)
 * MongoMapperTransformer - Map MongoDb fields to your Solr schema
     * mongoField (**required**)
 
@@ -49,8 +49,8 @@ Here is a sample data-config.xml showing the use of all components
                  query="{'Active':1}"
                  collection="ProductData"
                  datasource="MyMongo"
-                 deltaquery="{'UpdateDate':{$gt:{$date:${dih.last_index_time}}}}"
-                 deltaimportquery="{'_id':'${dih.delta._id}'}"
+                 deltaQuery="{'UpdateDate':{$gt:{$date:'${dih.last_index_time}'}}}"
+                 deltaImportQuery="{'_id':'${dih.delta._id}'}"
                  transformer="MongoMapperTransformer" >
              <field column="title"           name="title"       mongoField="Title"/>
              <field column="description"     name="description" mongoField="Long Description"/>
