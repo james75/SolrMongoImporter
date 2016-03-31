@@ -1,6 +1,3 @@
-/lib
- /build
- /dist
--/.idea
-+/.idea
-+*.iml
+lib/*
+build/*
+.idea/*
