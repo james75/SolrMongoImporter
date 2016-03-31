@@ -23,67 +23,67 @@ import static org.apache.solr.handler.dataimport.DataImportHandlerException.wrap
  */
 
 
-public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
+public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TemplateTransformer.class);
 
     private DBCollection mongoCollection;
-    private DB           mongoDb;
-    private Mongo        mongoConnection;
+    private DB mongoDb;
+    private Mongo mongoConnection;
 
     private DBCursor mongoCursor;
-    
+
     @Override
     public void init(Context context, Properties initProps) {
-        String databaseName   = initProps.getProperty( DATABASE   );
-        String host           = initProps.getProperty( HOST, "localhost" );
-        String port           = initProps.getProperty( PORT, "27017"     );
-        String username       = initProps.getProperty( USERNAME  );
-        String password       = initProps.getProperty( PASSWORD  );
+        String databaseName = initProps.getProperty(DATABASE);
+        String host = initProps.getProperty(HOST, "localhost");
+        String port = initProps.getProperty(PORT, "27017");
+        String username = initProps.getProperty(USERNAME);
+        String password = initProps.getProperty(PASSWORD);
 
-        if( databaseName == null ) {
-            throw new DataImportHandlerException( SEVERE
-                                                , "Database must be supplied");
+        if (databaseName == null) {
+            throw new DataImportHandlerException(SEVERE
+                    , "Database must be supplied");
         }
 
         try {
-            Mongo mongo  = new Mongo( host, Integer.parseInt( port ) );
+            Mongo mongo = new Mongo(host, Integer.parseInt(port));
             mongo.setReadPreference(ReadPreference.secondaryPreferred());
 
             this.mongoConnection = mongo;
-            this.mongoDb = mongo.getDB( databaseName );
+            this.mongoDb = mongo.getDB(databaseName);
 
-            if( username != null ){
-                if( this.mongoDb.authenticate( username, password.toCharArray() ) == false ){
-                    throw new DataImportHandlerException( SEVERE
-                                                        , "Mongo Authentication Failed");
+            if (username != null) {
+                if (this.mongoDb.authenticate(username, password.toCharArray()) == false) {
+                    throw new DataImportHandlerException(SEVERE
+                            , "Mongo Authentication Failed");
                 }
             }
 
-        } catch ( UnknownHostException e ) {
-            throw new DataImportHandlerException( SEVERE
-                                                , "Unable to connect to Mongo");
+        } catch (UnknownHostException e) {
+            throw new DataImportHandlerException(SEVERE
+                    , "Unable to connect to Mongo");
         }
     }
 
     @Override
     public Iterator<Map<String, Object>> getData(String query) {
 
-        DBObject queryObject  = (DBObject) JSON.parse( query );
-        LOG.debug("Executing MongoQuery: " + query.toString() );
+        DBObject queryObject = (DBObject) JSON.parse(query);
+        LOG.debug("Executing MongoQuery: " + query.toString());
 
         long start = System.currentTimeMillis();
-        mongoCursor  = this.mongoCollection.find( queryObject );
+        mongoCursor = this.mongoCollection.find(queryObject);
         LOG.trace("Time taken for mongo :"
                 + (System.currentTimeMillis() - start));
 
-        ResultSetIterator resultSet = new ResultSetIterator( mongoCursor );
+        ResultSetIterator resultSet = new ResultSetIterator(mongoCursor);
         return resultSet.getIterator();
     }
 
-    public Iterator<Map<String, Object>> getData(String query, String collection ) {
-        this.mongoCollection = this.mongoDb.getCollection( collection );
-        return getData( query );
+    public Iterator<Map<String, Object>> getData(String query, String collection) {
+        this.mongoCollection = this.mongoDb.getCollection(collection);
+        return getData(query);
     }
 
     private class ResultSetIterator {
@@ -91,7 +91,7 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
 
         Iterator<Map<String, Object>> rSetIterator;
 
-        public ResultSetIterator( DBCursor MongoCursor ){
+        public ResultSetIterator(DBCursor MongoCursor) {
             this.MongoCursor = MongoCursor;
 
 
@@ -111,23 +111,23 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
 
         }
 
-        public Iterator<Map<String, Object>> getIterator(){
+        public Iterator<Map<String, Object>> getIterator() {
             return rSetIterator;
         }
 
-        private Map<String, Object> getARow(){
+        private Map<String, Object> getARow() {
             DBObject mongoObject = getMongoCursor().next();
 
-            Map<String, Object> result   = new HashMap<String, Object>();
-            Set<String>         keys     = mongoObject.keySet();
-            Iterator<String>    iterator = keys.iterator();
+            Map<String, Object> result = new HashMap<String, Object>();
+            Set<String> keys = mongoObject.keySet();
+            Iterator<String> iterator = keys.iterator();
 
 
-            while ( iterator.hasNext() ) {
+            while (iterator.hasNext()) {
                 String key = iterator.next();
                 Object innerObject = mongoObject.get(key);
 
-                result.put( key, innerObject );
+                result.put(key, innerObject);
             }
 
             return result;
@@ -145,7 +145,7 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
                 }
             } catch (MongoException e) {
                 close();
-                wrapAndThrow(SEVERE,e);
+                wrapAndThrow(SEVERE, e);
                 return false;
             }
         }
@@ -162,27 +162,27 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>>{
         }
     }
 
-    private DBCursor getMongoCursor(){
+    private DBCursor getMongoCursor() {
         return this.mongoCursor;
     }
 
     @Override
     public void close() {
-        if( this.mongoCursor != null ){
+        if (this.mongoCursor != null) {
             this.mongoCursor.close();
         }
 
-        if (this.mongoConnection !=null ){
+        if (this.mongoConnection != null) {
             this.mongoConnection.close();
         }
     }
 
 
-    public static final String DATABASE   = "database";
-    public static final String HOST       = "host";
-    public static final String PORT       = "port";
-    public static final String USERNAME   = "username";
-    public static final String PASSWORD   = "password";
+    public static final String DATABASE = "database";
+    public static final String HOST = "host";
+    public static final String PORT = "port";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
 
 }
 

@@ -24,24 +24,24 @@ public class MongoEntityProcessor extends EntityProcessorBase {
     @Override
     public void init(Context context) {
         super.init(context);
-        this.collection = context.getEntityAttribute( COLLECTION );
-        if( this.collection == null ) {
+        this.collection = context.getEntityAttribute(COLLECTION);
+        if (this.collection == null) {
             throw new DataImportHandlerException(SEVERE,
                     "Collection must be supplied");
 
         }
-        this.dataSource  = (MongoDataSource) context.getDataSource();
+        this.dataSource = (MongoDataSource) context.getDataSource();
     }
 
     protected void initQuery(String q) {
         try {
             DataImporter.QUERY_COUNT.get().incrementAndGet();
-            rowIterator = dataSource.getData( q, this.collection );
+            rowIterator = dataSource.getData(q, this.collection);
             this.query = q;
         } catch (DataImportHandlerException e) {
             throw e;
         } catch (Exception e) {
-            LOG.error( "The query failed '" + q + "'", e);
+            LOG.error("The query failed '" + q + "'", e);
             throw new DataImportHandlerException(DataImportHandlerException.SEVERE, e);
         }
     }
@@ -60,7 +60,7 @@ public class MongoEntityProcessor extends EntityProcessorBase {
     public Map<String, Object> nextModifiedRowKey() {
         if (rowIterator == null) {
             String deltaQuery = context.getEntityAttribute(DELTA_QUERY);
-            if(deltaQuery == null)
+            if (deltaQuery == null)
                 return null;
             initQuery(context.replaceTokens(deltaQuery));
 
@@ -72,7 +72,7 @@ public class MongoEntityProcessor extends EntityProcessorBase {
     public Map<String, Object> nextDeletedRowKey() {
         if (rowIterator == null) {
             String deletedPkQuery = context.getEntityAttribute(DEL_PK_QUERY);
-            if(deletedPkQuery == null)
+            if (deletedPkQuery == null)
                 return null;
             initQuery(context.replaceTokens(deletedPkQuery));
         }
@@ -81,9 +81,9 @@ public class MongoEntityProcessor extends EntityProcessorBase {
 
     @Override
     public Map<String, Object> nextModifiedParentRowKey() {
-        if(this.rowIterator == null) {
+        if (this.rowIterator == null) {
             String parentDeltaQuery = this.context.getEntityAttribute("parentDeltaQuery");
-            if(parentDeltaQuery == null) {
+            if (parentDeltaQuery == null) {
                 return null;
             }
 
@@ -96,9 +96,9 @@ public class MongoEntityProcessor extends EntityProcessorBase {
 
     public String getQuery() {
         String queryString = this.context.getEntityAttribute(QUERY);
-        if("FULL_DUMP".equals(this.context.currentProcess())) {
+        if ("FULL_DUMP".equals(this.context.currentProcess())) {
             return queryString;
-        } else if("DELTA_DUMP".equals(this.context.currentProcess())) {
+        } else if ("DELTA_DUMP".equals(this.context.currentProcess())) {
             return this.context.getEntityAttribute(DELTA_IMPORT_QUERY);
 
         } else {
@@ -107,7 +107,7 @@ public class MongoEntityProcessor extends EntityProcessorBase {
     }
 
 
-    public static final String QUERY      = "query";
+    public static final String QUERY = "query";
 
     public static final String DELTA_QUERY = "deltaQuery";
 
