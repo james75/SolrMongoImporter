@@ -1,0 +1,6 @@
+/lib
+ /build
+ /dist
+-/.idea
++/.idea
++*.iml
