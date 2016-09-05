@@ -1,19 +1,31 @@
 package org.apache.solr.handler.dataimport;
 
 
-import com.mongodb.*;
-import com.mongodb.util.JSON;
+import static org.apache.solr.handler.dataimport.DataImportHandlerException.SEVERE;
+import static org.apache.solr.handler.dataimport.DataImportHandlerException.wrapAndThrow;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.UnknownHostException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
-
-import static org.apache.solr.handler.dataimport.DataImportHandlerException.SEVERE;
-import static org.apache.solr.handler.dataimport.DataImportHandlerException.wrapAndThrow;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.MongoException;
+import com.mongodb.ReadPreference;
+import com.mongodb.ServerAddress;
+import com.mongodb.util.JSON;
 
 /**
  * User: James
@@ -41,29 +53,31 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>> {
         String username = initProps.getProperty(USERNAME);
         String password = initProps.getProperty(PASSWORD);
 
-        if (databaseName == null) {
-            throw new DataImportHandlerException(SEVERE
-                    , "Database must be supplied");
-        }
+		if (databaseName == null) {
+			throw new DataImportHandlerException(SEVERE, "Database must be supplied");
+		}
+		MongoClient mongoclient=null;
+		try {
+			if (username == null) {
+				mongoclient = new MongoClient(new ServerAddress(host, Integer.valueOf(port)));
+				mongoclient.setReadPreference(ReadPreference.secondaryPreferred());
+			}
+			else if (username != null) {
+				List<MongoCredential> credentialsList = new ArrayList<MongoCredential>();
+				MongoCredential mc = MongoCredential.createCredential(username, databaseName, password.toCharArray());
+				credentialsList.add(mc);
 
-        try {
-            Mongo mongo = new Mongo(host, Integer.parseInt(port));
-            mongo.setReadPreference(ReadPreference.secondaryPreferred());
-
-            this.mongoConnection = mongo;
-            this.mongoDb = mongo.getDB(databaseName);
-
-            if (username != null) {
-                if (this.mongoDb.authenticate(username, password.toCharArray()) == false) {
-                    throw new DataImportHandlerException(SEVERE
-                            , "Mongo Authentication Failed");
-                }
-            }
-
-        } catch (UnknownHostException e) {
-            throw new DataImportHandlerException(SEVERE
-                    , "Unable to connect to Mongo");
-        }
+				mongoclient = new MongoClient(new ServerAddress(host, Integer.valueOf(port)), credentialsList);
+				mongoclient.setReadPreference(ReadPreference.secondaryPreferred());
+			}
+			
+			this.mongoConnection = mongoclient;
+			this.mongoDb = ((Mongo) mongoclient).getDB(databaseName);
+			
+		} catch (Exception e) {
+			throw new DataImportHandlerException(SEVERE, e.getMessage());
+		}
+		
     }
 
     @Override

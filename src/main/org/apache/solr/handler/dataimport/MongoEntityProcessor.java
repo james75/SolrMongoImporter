@@ -1,11 +1,16 @@
 package org.apache.solr.handler.dataimport;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.solr.handler.dataimport.DataImportHandlerException.SEVERE;
 
 import java.util.Map;
 
-import static org.apache.solr.handler.dataimport.DataImportHandlerException.SEVERE;
+import org.apache.solr.handler.dataimport.Context;
+import org.apache.solr.handler.dataimport.DataImportHandlerException;
+import org.apache.solr.handler.dataimport.DataImporter;
+import org.apache.solr.handler.dataimport.EntityProcessorBase;
+import org.apache.solr.handler.dataimport.MongoDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * User: James
