@@ -38,7 +38,7 @@ Welcome to the Solr Mongo Importer project. This project provides MongoDb suppor
     <lib path="../../dist/mongo.jar" />
 ```
 
-##Usage
+## Usage
 Here is a sample data-config.xml showing the use of all components
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
