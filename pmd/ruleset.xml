@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<ruleset name="Custom ruleset" xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd"
+	xsi:noNamespaceSchemaLocation="http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+	<description>This ruleset checks my code for bad stuff</description>
+
+	<!-- We want to customize this rule a bit, change the message and raise 
+		 the priority -->
+	<rule ref="rulesets/java/basic.xml" message="Must handle exceptions">
+		<priority>2</priority>
+	</rule>
+
+	<!-- We want everything from braces.xml except WhileLoopsMustUseBraces -->
+	<rule ref="rulesets/java/braces.xml">
+		<exclude name="WhileLoopsMustUseBraces" />
+	</rule>
+
+	<rule ref="rulesets/java/codesize.xml"/>
+	<!-- Now we'll customize a rule's property value -->
+	<rule ref="rulesets/java/codesize.xml/CyclomaticComplexity">
+		<properties>
+			<property name="reportLevel" value="7" />
+		</properties>
+	</rule>
+
+	<rule ref="rulesets/java/comments.xml" />
+	<rule ref="rulesets/java/comments.xml/CommentRequired">
+		<properties>
+			<property name="fieldCommentRequirement" value="Ignored" />
+		</properties>
+	</rule>
+	<rule ref="rulesets/java/comments.xml/CommentSize">
+		<properties>
+			<property name="maxLines" value="30" />
+			<property name="maxLineLength" value="100" />
+		</properties>
+	</rule>
+	
+	<rule ref="rulesets/java/imports.xml" />
+	<rule ref="rulesets/java/naming.xml" />
+	<rule ref="rulesets/java/naming.xml/LongVariable">
+		<properties>
+			<property name="minimum" value="25" />
+		</properties>
+	</rule>
+
+	<rule ref="rulesets/java/optimizations.xml" />
+	<rule ref="rulesets/java/strictexception.xml" />
+	<rule ref="rulesets/java/strings.xml" />
+	<rule ref="rulesets/java/sunsecure.xml" />
+	<rule ref="rulesets/java/typeresolution.xml" />
+	<rule ref="rulesets/java/unnecessary.xml" />
+	<rule ref="rulesets/java/unusedcode.xml" />
+	<rule ref="rulesets/java/junit.xml" />
+</ruleset>
