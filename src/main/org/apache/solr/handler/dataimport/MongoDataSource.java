@@ -3,6 +3,7 @@ package org.apache.solr.handler.dataimport;
 
 import com.mongodb.*;
 import com.mongodb.util.JSON;
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,12 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>> {
 
         DBObject queryObject = (DBObject) JSON.parse(query);
         LOG.debug("Executing MongoQuery: " + query.toString());
+
+        // convert string id to BSON object id
+        Object oid = queryObject.get("_id");
+        if (oid != null && oid instanceof String) {
+            queryObject.put("_id", new ObjectId(oid.toString()));
+        }
 
         long start = System.currentTimeMillis();
         mongoCursor = this.mongoCollection.find(queryObject);
