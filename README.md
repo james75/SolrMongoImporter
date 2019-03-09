@@ -1,6 +1,14 @@
 # Solr Mongo Importer
 Welcome to the Solr Mongo Importer project. This project provides MongoDb support for the Solr Data Import Handler.
 
+## Differences between this fork and the upstream
+
+I'm writing this from memory as the author did not update the readme himself or provide detailed commit logs, but it should be accurate based on what I saw in the code comments and the conversation I had with him when he published the code.
+
+BuyerQuest uses Mongodb replica sets which requires that the connector perform a discovery process through the MongoDB driver. The original code did not support that functionality, and so only supported connecting to an individual server instead of using a multi-server connection URI. There were also some tests added to validate this functionality.
+
+The original README.md continues below.
+
 ## Features
 * Retrive data from a MongoDb collection
 * Authenticate using MongoDb authentication
