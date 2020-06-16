@@ -211,6 +211,10 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>> {
     if (this.mongoCursor != null) {
       this.mongoCursor.close();
     }
+
+    if (this.client != null) {
+      this.client.close();
+    }
   }
 
   /**
