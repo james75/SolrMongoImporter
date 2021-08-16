@@ -43,10 +43,12 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>> {
    */
   @Override
   @SuppressWarnings({ "PMD.CommentRequired", "PMD.AvoidDuplicateLiterals" })
-  public void init(final Context context, final Properties mongoInitProperties) {
+  public void init(final Context context, final Properties initProps) {
     LOG.debug("init() - start");
 
-    final String databaseName = mongoInitProperties.getProperty(DATABASE);
+    resolveVariables(context, initProps);
+
+    final String databaseName = initProps.getProperty(DATABASE);
     LOG.debug("Using databaseName of " + databaseName);
 
     // The database name parameter is required, throw
@@ -58,11 +60,11 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>> {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Initialization properties:");
       for (@SuppressWarnings("rawtypes")
-      final Map.Entry entry : mongoInitProperties.entrySet()) {
+      final Map.Entry entry : initProps.entrySet()) {
         LOG.debug("  - " + entry.getKey() + " = " + entry.getValue());
       }
     }
-    this.client = this.getClient(mongoInitProperties);
+    this.client = this.getClient(initProps);
     this.database = this.client.getDatabase(databaseName)
         .withReadPreference(ReadPreference.secondaryPreferred());
 
@@ -71,23 +73,23 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>> {
 
   /**
    * Builds and returns the {@link MongoClient} used to connect to the Mongo instances specified in
-   * {@code mongoInitProperties} parameter. Supports seeding the client with muliple instances via
+   * {@code initProps} parameter. Supports seeding the client with muliple instances via
    * the use of a Mongo JDBC style URI.
    * 
-   * @param mongoInitProperties the initialization properties passed in from the SOLR DIH
+   * @param initProps the initialization properties passed in from the SOLR DIH
    * @return the {@link MongoClient} to be used when querying the Mongo data store
    */
-  public MongoClient getClient(final Properties mongoInitProperties) {
+  public MongoClient getClient(final Properties initProps) {
     LOG.debug("getClient() - start");
-    final String databaseName = mongoInitProperties.getProperty(DATABASE);
+    final String databaseName = initProps.getProperty(DATABASE);
 
     // Default to using a URL, which allows for all kinds of Mongo configurations including
     // standalone, replica sets, shards, etc.
-    if (mongoInitProperties.containsKey(URI)
-        && !StringUtils.isEmpty(mongoInitProperties.getProperty(URI))) {
+    if (initProps.containsKey(URI)
+        && !StringUtils.isEmpty(initProps.getProperty(URI))) {
 
       // Build the URI used to connect to Mongo
-      final String uri = mongoInitProperties.getProperty(URI);
+      final String uri = initProps.getProperty(URI);
 
       LOG.debug("Returning getClientFromURI()");
       return this.getClientFromURI(uri);
@@ -95,10 +97,10 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>> {
     } else {
       // Assume a single server is being used; if nothing is specified, then assume it is a
       // developer running Mongo on localhost.
-      final String host = mongoInitProperties.getProperty(HOST, "localhost");
-      final Integer port = Integer.valueOf(mongoInitProperties.getProperty(PORT, "27017"));
-      final String username = mongoInitProperties.getProperty(USERNAME);
-      final String password = mongoInitProperties.getProperty(PASSWORD);
+      final String host = initProps.getProperty(HOST, "localhost");
+      final Integer port = Integer.valueOf(initProps.getProperty(PORT, "27017"));
+      final String username = initProps.getProperty(USERNAME);
+      final String password = initProps.getProperty(PASSWORD);
 
       LOG.debug("Returning getClient() using host, port, datbaseName, username, and password");
       return this.getClient(host, port, databaseName, username, password);
@@ -271,6 +273,15 @@ public class MongoDataSource extends DataSource<Iterator<Map<String, Object>>> {
       return result;
     }
   }
+
+  private void resolveVariables(Context ctx, Properties initProps) {
+    for (Map.Entry<Object, Object> entry : initProps.entrySet()) {
+      if (entry.getValue() != null) {
+        entry.setValue(ctx.replaceTokens((String) entry.getValue()));
+      }
+    }
+  }
+  
   public static final String DATABASE = "database";
   public static final String HOST = "host";
   public static final String PORT = "port";
